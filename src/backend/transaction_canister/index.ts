@@ -1,0 +1,71 @@
+import {
+    Canister,
+    ic,
+    nat64,
+    None,
+    Opt,
+    query,
+    Some,
+    text,
+    update,
+    Vec,
+    Void
+} from 'azle';
+
+import { State, Account, AccountArgs } from './types';
+
+let db: State = {
+    accounts: {
+        '0': {
+            id: '0',
+            balance: 100n
+        }
+    },
+    notification: ''
+};
+
+export default Canister({
+    transfer: update([text, text, nat64], nat64, (from, to, amount) => {
+        const fromAccount: Account | undefined = db.accounts[from];
+        if (fromAccount === undefined) {
+            db.accounts[from] = {
+                id: from,
+                balance: 0n
+            };
+        }
+        const fromBalance = db.accounts[from].balance;
+        if (fromBalance < amount) {
+            return 0n;
+        }
+        const toBalance: nat64 | undefined = db.accounts[to]?.balance;
+        if (toBalance === undefined) {
+            db.accounts[to] = {
+                id: to,
+                balance: 0n
+            };
+        }
+        db.accounts[from].balance -= amount;
+        db.accounts[to].balance += amount;
+        return amount;
+    }),
+    balance: query([text], nat64, (id) => {
+        return db.accounts[id]?.balance ?? 0n;
+    }),
+    account: query([AccountArgs], Opt(Account), (accountArgs) => {
+        const account = db.accounts[accountArgs.id];
+        return account ? Some(account) : None;
+    }),
+    accounts: query([], Vec(Account), () => {
+        return Object.values(db.accounts);
+    }),
+    trap: query([], text, () => {
+        ic.trap('hahahaha');
+        return 'You will never get here';
+    }),
+    receiveNotification: update([text], Void, (message) => {
+        db.notification = message;
+    }),
+    getNotification: query([], text, () => {
+        return db.notification;
+    })
+});

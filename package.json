@@ -1,19 +1,14 @@
 {
     "scripts": {
-        "build": "cd src/frontend && VITE_CANISTER_ORIGIN=http://$(dfx canister id backend).localhost:8000 vite build",
+        "build": "cd src/frontend && VITE_CANISTER_ORIGIN=http://$(dfx canister id express).localhost:8000 vite build",
         "pretest": "ts-node --transpile-only --ignore=false --skip-project test/pretest.ts",
         "test": "ts-node --transpile-only --ignore=false --skip-project test/test.ts"
     },
     "dependencies": {
         "azle": "^0.20.1",
         "bcryptjs": "^2.4.3",
-        "cookie-session": "^2.1.0",
-        "cors": "^2.8.5",
         "express": "^4.18.2",
-        "jsonwebtoken": "^9.0.2",
-        "lit": "^3.1.2",
-        "mysql2": "^3.9.1",
-        "sequelize": "^6.37.1"
+        "lit": "^3.1.2"
     },
     "devDependencies": {
         "@types/express": "^4.17.21",

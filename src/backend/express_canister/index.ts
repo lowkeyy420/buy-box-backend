@@ -1,31 +1,16 @@
 import { Server } from 'azle';
 import express, { Request } from 'express';
-import db from './models';
-const cors = require('cors');
-const cookieSession = require("cookie-session");
+
+// const cors = require('cors');
+// const cookieSession = require("cookie-session");
 
 
 export default Server(() => {
     const app = express();
 
-    app.use(cors());
-
     app.use(express.json());
 
-    app.use(
-        cookieSession({
-          name: "bezkoder-session",
-          keys: ["test"], // should use as secret environment variable
-          httpOnly: true,
-        })
-      );
-
-    db.sequelize.sync({ force: true }).then(() => {
-        console.log('Drop and Resync Db');
-        db.user.create({})
-    });
-
-    app.get('ping', (req, res) => {
+    app.get('/ping', (req, res) => {
         res.json({ message: 'pong' })
     });
 

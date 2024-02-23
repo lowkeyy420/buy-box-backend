@@ -1,6 +1,6 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
 
-class User extends Model {
+export class User extends Model {
     public id!: number;
     public username!: string;
     public email!: string;
@@ -22,7 +22,13 @@ export default (sequelize: Sequelize) => {
         },
         password: {
             type: DataTypes.STRING
-        }
+        },
+        
+        isSeller: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
+
     }, {
         sequelize,
         modelName: 'User',

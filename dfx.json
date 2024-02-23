@@ -5,7 +5,7 @@
             "main": "src/backend/express_canister/index.ts",
             "candid": "src/backend/express_canister/index.did",
             "build": "npx azle express",
-            "wasm": ".azle/backend/backend.wasm",
+            "wasm": ".azle/express/backend.wasm",
             "gzip": true,
             "assets": [
                 [
@@ -20,7 +20,7 @@
             "main": "src/backend/transaction_canister/index.ts",
             "candid": "src/backend/transaction_canister/index.did",
             "build": "npx azle transaction",
-            "wasm": ".azle/backend/transaction.wasm",
+            "wasm": ".azle/transaction/transaction.wasm",
             "gzip": true,
             "build_assets": "npm run build"
         }

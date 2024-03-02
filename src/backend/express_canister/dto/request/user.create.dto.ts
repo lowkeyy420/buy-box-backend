@@ -1,11 +1,18 @@
 import { Record, text } from "azle";
 
-const UserCreateRequestDTO = Record({
-  username: text,
-  email: text,
-  full_name: text,
-  password: text
-});
+class UserCreateRequestDTO {
+  username: string;
+  email: string;
+  full_name: string;
+  password: string;
 
-type UserCreateRequestDTO = typeof UserCreateRequestDTO.tsType;
+  constructor(username: string, email: string, full_name: string, password: string) {
+    this.username = username;
+    this.email = email;
+    this.full_name = full_name;
+    this.password = password;
+  }
+
+};
+
 export default UserCreateRequestDTO;

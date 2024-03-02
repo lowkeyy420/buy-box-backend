@@ -36,7 +36,7 @@ export function verifyToken(token: string) {
 
     const payload = JSON.parse(Buffer.from(payloadBase64, 'base64').toString());
 
-    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
+    if (payload.expiration && payload.expiration < Math.floor(Date.now() / 1000)) {
         return null; // Token expired
     }
 

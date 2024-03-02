@@ -4,11 +4,11 @@ import cors from 'cors';
 import { tokenStorage, usersStorage } from './db/data';
 import User from './model/user';
 import UserCreateRequestDTO from './dto/request/user.create.dto';
-import { generateId } from './utils/util';
 import { compareSync, hashSync } from 'bcryptjs';
 import { SECRET } from './env';
 import { generateToken } from './utils/jwt';
 import UserToken from './model/user_token';
+import generateId from './utils/util';
 
 
 export default Server(() => {
@@ -100,6 +100,34 @@ export default Server(() => {
     app.get("/token", (req, res) => {
         res.json(tokenStorage.values());
     });
+
+
+    app.get("/authenticate", (req, res) => {
+
+        const tokenRequest = req.headers.authorization?.split(' ')[1];
+
+        if (!tokenRequest) {
+            return res.status(401).send('no token');
+        }
+
+        const tokenOpt = tokenStorage.get(tokenRequest);
+
+        if ("None" in tokenOpt) {
+            return res.status(401).send('token not in storage');
+        }
+
+        if (tokenOpt.Some.expiration < Date.now() / 1000) {
+            tokenStorage.remove(tokenRequest)
+            return res.status(401).send('token expired');
+        }
+
+        return res.json({
+            token: tokenOpt.Some
+        })
+
+
+    });
+
 
 
     app.use(express.static('/dist'));

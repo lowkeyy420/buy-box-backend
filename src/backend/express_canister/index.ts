@@ -22,6 +22,14 @@ export default Server(() => {
 
     app.post('/register', async (req: Request<any, any, any>, res) => {
 
+        const email = req.body.email;
+        for (const iterator of usersStorage.values()) {
+            if (email === iterator.email) {
+                return res.status(400).send();
+            }
+        }
+
+
         const userID = generateId();
         const userOpt = usersStorage.get(userID);
 

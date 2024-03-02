@@ -1,5 +1,3 @@
-import { Record, text } from "azle";
-
 class UserCreateRequestDTO {
   username: string;
   email: string;

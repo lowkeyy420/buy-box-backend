@@ -1,11 +1,12 @@
 import { Request } from "express";
 import { tokenStorage, usersStorage } from "../db/data";
+import UserTokenResponseDTO from "../dto/response/user_token.authenticate.dto";
 
 export function authenticateToken(req: Request<any, any, any>, res: any) {
     const tokenRequest = req.headers.authorization?.split(" ")[1];
 
     if (!tokenRequest) {
-        return res.status(401).send("no token");
+        return res.status(400).send("no token");
     }
 
     const tokenOpt = tokenStorage.get(tokenRequest);
@@ -15,8 +16,12 @@ export function authenticateToken(req: Request<any, any, any>, res: any) {
     }
 
     if (tokenOpt.Some.expiration < Date.now() / 1000) {
-        tokenStorage.remove(tokenRequest);
-        return res.status(401).send("token expired");
+        const deletedTokenOpt = tokenStorage.remove(tokenOpt.Some.token);
+
+        if ("None" in deletedTokenOpt) {
+            return res.status(500).send("token not removed");
+        }
+        return res.status(401).send("token expired ");
     }
 
     const userOpt = usersStorage.get(tokenOpt.Some.user_id);
@@ -24,8 +29,10 @@ export function authenticateToken(req: Request<any, any, any>, res: any) {
         return res.status(500).send("user_id is invalid");
     }
 
-    return res.json({
+    const response: UserTokenResponseDTO = {
         token: tokenOpt.Some,
         user: { ...userOpt.Some },
-    });
+    }
+
+    return res.json(response);
 }

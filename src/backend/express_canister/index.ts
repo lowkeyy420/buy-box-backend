@@ -1,13 +1,15 @@
 import { Server } from 'azle';
 import express, { Request } from 'express';
 import cors from 'cors';
-import { categoryStorage, tokenStorage, usersStorage } from './db/data';
+import { categoryStorage, mediaStorage, productStorage, tokenStorage, usersStorage } from './db/data';
 import UserCreateRequestDTO from './dto/request/user.create.dto';
 import UserLoginRequestDTO from './dto/request/user.login.dto';
 import { createUser, loginUser } from './service/user.service';
 import { authenticateToken } from './service/user_token.service';
 import { createCategory, seedCategory } from './service/category.service';
 import Category from './model/category';
+import { createMedia } from './service/media.service';
+import { createProduct } from './service/product.service';
 
 
 export default Server(() => {
@@ -35,6 +37,7 @@ export default Server(() => {
     });
 
 
+    // category
     app.get("/category", (_, res) => {
         res.json(categoryStorage.values());
     });
@@ -43,9 +46,24 @@ export default Server(() => {
         createCategory(req, res);
     });
 
+    // media
+
+    app.get("/media", (_, res) => {
+        res.json(mediaStorage.values());
+    })
+
+
+    // product
+
+    app.get("/product", (_, res) => {
+        res.json(productStorage.values());
+    })
 
 
 
+    app.post("/product", (req, res) => {
+        createProduct(req, res);
+    })
 
 
     // testing purpose

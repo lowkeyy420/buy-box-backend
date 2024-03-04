@@ -1,50 +1,93 @@
-import { Result, query, text, update, nat64, Opt, Ok, Err, Variant } from "azle";
 import UserCreateRequestDTO from "../dto/request/user.create.dto";
 import User from "../model/user";
-import { usersStorage } from "../db/data";
+import { tokenStorage, usersStorage } from "../db/data";
 import generateId from "../utils/util";
+import { Request } from "express";
+import { compareSync, hashSync } from "bcryptjs";
+import { generateToken } from "../utils/jwt";
+import UserToken from "../model/user_token";
+import UserCreateResponsetDTO from "../dto/response/user.create.dto";
+import UserLoginRequestDTO from "../dto/request/user.login.dto";
+import UserLoginResponsetDTO from "../dto/response/user.login.dto";
 
-const Error = Variant({
-  UserDoesNotExist: text,
-  ShoppingListDoesNotExist: text,
-});
-export type Error = typeof Error.tsType;
 
-export const createUser = update(
-  [UserCreateRequestDTO],
-  User,
-  async (dto: UserCreateRequestDTO) => {
-    const user: User = {
-      id: usersStorage.len(),
-      secure_id: generateId(),
-      username: dto.username,
-      email: dto.email,
-      full_name: dto.full_name,
-      password: dto.password,
-      is_seller: false  
+export function createUser(req: Request<UserCreateRequestDTO, any, any>, res: any) {
+  const payload: UserCreateRequestDTO = req.body;
+
+  for (const iterator of usersStorage.values()) {
+    if (payload.email === iterator.email) {
+      return res.status(400).send();
+    }
+  }
+
+  const userID = generateId();
+  const userOpt = usersStorage.get(userID);
+
+  if ("None" in userOpt) {
+    const password = hashSync(req.body.password, 8);
+
+    const user: User =
+    {
+      id: userID,
+      ...payload,
+      password: password,
+      is_seller: false
     };
+
     usersStorage.insert(user.id, user);
 
-    return user;
-  }
-);
+    const generatedToken = generateToken({
+      user_id: user.id,
+      full_name: user.full_name,
+      is_seller: user.is_seller
+    }, 60);
 
-export const findByEmail = query(
-  [text],
-  Result(User, Error),
-  async (email) => {
-
-    console.log("masuk find by email, email: ", email);
-
-    for (let num = BigInt(0); num < usersStorage.len(); num++) {
-      const optUser: Opt<User> = usersStorage.get(num);
-      if (optUser.Some?.email === email) {
-        return Ok(optUser.Some);
-      }
+    const token: UserToken = {
+      token: generatedToken.token,
+      user_id: user.id,
+      expiration: generatedToken.expiration
     }
-    
-    return Err({
-      UserDoesNotExist: email
-    });
+
+    tokenStorage.insert(token.token, token)
+
+    const response: UserCreateResponsetDTO = {
+      token: token.token,
+      data: user.email
+    }
+
+    return res.json(response);
   }
-);
+
+  return res.status(400).send();
+}
+
+export function loginUser(req: Request<UserLoginRequestDTO, any, any>, res: any) {
+  const payload: UserLoginRequestDTO = req.body;
+
+  for (const iterator of usersStorage.values()) {
+    if (payload.email === iterator.email && compareSync(payload.password, iterator.password)) {
+
+      const generatedToken = generateToken({
+        user_id: iterator.id,
+        full_name: iterator.full_name,
+        is_seller: iterator.is_seller
+      }, 60);
+
+      const token: UserToken = {
+        token: generatedToken.token,
+        user_id: iterator.id,
+        expiration: generatedToken.expiration
+      }
+
+      tokenStorage.insert(token.token, token)
+
+      const response: UserLoginResponsetDTO = {
+        token: token.token,
+      }
+
+      return res.json(response);
+    }
+  }
+
+  return res.status(400).send();
+}

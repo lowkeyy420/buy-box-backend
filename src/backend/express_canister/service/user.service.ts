@@ -31,7 +31,7 @@ export function createUser(req: Request<UserCreateRequestDTO, any, any>, res: an
       id: userID,
       ...payload,
       password: password,
-      is_seller: false
+      is_store: false
     };
 
     usersStorage.insert(user.id, user);
@@ -39,7 +39,7 @@ export function createUser(req: Request<UserCreateRequestDTO, any, any>, res: an
     const generatedToken = generateToken({
       user_id: user.id,
       full_name: user.full_name,
-      is_seller: user.is_seller
+      is_store: user.is_store
     }, 60);
 
     const token: UserToken = {
@@ -70,7 +70,7 @@ export function loginUser(req: Request<UserLoginRequestDTO, any, any>, res: any)
       const generatedToken = generateToken({
         user_id: iterator.id,
         full_name: iterator.full_name,
-        is_seller: iterator.is_seller
+        is_store: iterator.is_store
       }, 60);
 
       const token: UserToken = {

@@ -1,5 +1,6 @@
 import { Request } from "express";
 import { tokenStorage, usersStorage } from "../db/data";
+import User from "../model/user";
 
 export function checkLoggedIn(req: Request<any, any, any>, res: any, next: any) {
     const tokenRequest = req.headers.authorization?.split(" ")[1];
@@ -34,3 +35,13 @@ export function checkLoggedIn(req: Request<any, any, any>, res: any, next: any) 
 
     next();
 };
+
+export function checkIsStore(req: Request<any, any, any>, res: any, next: any) {
+    const user: User = (req as any).user;
+
+    if (user.is_store === false) {
+        return res.status(401).send("Not a store");
+    }
+
+    next();
+}

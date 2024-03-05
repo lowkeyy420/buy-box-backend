@@ -7,7 +7,9 @@ import { createMedia } from "./media.service";
 
 export function createProduct(req: any, res: any) {
 
+    const store_id = (req as any).user.id;
     const payload: ProductRequestDTO = req.body;
+
     let id = "";
 
     const checkCategoryOpt = categoryStorage.get(payload.category_id);
@@ -36,6 +38,7 @@ export function createProduct(req: any, res: any) {
 
     const product: Product = {
         id: id,
+        store_id: store_id,
         category_id: payload.category_id,
         name: payload.name,
         description: payload.description,

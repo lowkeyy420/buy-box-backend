@@ -10,6 +10,8 @@ import { createCategory, seedCategory } from './service/category.service';
 import Category from './model/category';
 import { createMedia } from './service/media.service';
 import { createProduct } from './service/product.service';
+import { checkIsStore, checkLoggedIn } from './routes/middleware';
+import { createStore } from './service/store.service';
 
 
 export default Server(() => {
@@ -32,17 +34,23 @@ export default Server(() => {
     });
 
 
-    app.get("/authenticate", (req: Request<any, any, any>, res) => {
+    app.get("/authenticate", checkLoggedIn, (req: Request<any, any, any>, res) => {
         authenticateToken(req, res);
     });
 
+
+    // user
+
+    app.post('/become-seller', checkLoggedIn, async (req: Request<UserLoginRequestDTO, any, any>, res) => {
+        createStore(req, res);
+    });
 
     // category
     app.get("/category", (_, res) => {
         res.json(categoryStorage.values());
     });
 
-    app.post("/category", (req, res) => {
+    app.post("/category", checkLoggedIn, checkIsStore, (req, res) => {
         createCategory(req, res);
     });
 
@@ -61,9 +69,10 @@ export default Server(() => {
 
 
 
-    app.post("/product", (req, res) => {
+    app.post("/product", checkLoggedIn, checkIsStore, (req, res) => {
         createProduct(req, res);
     })
+
 
 
     // testing purpose

@@ -1,10 +1,12 @@
 import { Request } from "express";
-import { categoryStorage, mediaStorage, productStorage } from "../db/data";
+import { categoryStorage, mediaStorage, productStorage, usersStorage } from "../db/data";
 import ProductRequestDTO from "../dto/request/product.create.dto";
 import Media from "../model/media";
 import Product from "../model/product";
 import generateId from "../utils/util";
 import { createMedia } from "./media.service";
+import { getCategoryName } from "./category.service";
+import ProductResponseDTO from "../dto/response/product.dto";
 
 export function createProduct(req: Request<any, any, any>, res: any) {
 
@@ -13,9 +15,9 @@ export function createProduct(req: Request<any, any, any>, res: any) {
 
     let id = "";
 
-    const checkCategoryOpt = categoryStorage.get(payload.category_id);
-    if ("None" in checkCategoryOpt) {
-        return res.status(400).json("Category does not exist");
+    const category_name = getCategoryName(payload.category_id);
+    if (category_name === "") {
+        return res.status(400).json("Invalid category id");
     }
 
     while (true) {
@@ -49,7 +51,19 @@ export function createProduct(req: Request<any, any, any>, res: any) {
     };
 
     productStorage.insert(product.id, product);
-    return res.json(product);
+
+    const response: ProductResponseDTO = {
+        id: product.id,
+        store_id: product.store_id,
+        category_name: category_name,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        stock: product.stock,
+        medias: product.medias
+    }
+
+    return res.json(response);
 }
 
 export function removeProduct(req: Request<any, any, any>, res: any) {
@@ -89,4 +103,113 @@ export function updateProduct(req: Request<any, any, any>, res: any) {
 
     productStorage.insert(product_id, newProduct);
     return res.json(newProduct);
+}
+
+export function getAllProduct(req: Request<any, any, any>, res: any) {
+    let products: ProductResponseDTO[] = [];
+
+    productStorage.values().forEach((product: Product) => {
+        const category_name = getCategoryName(product.category_id);
+        const productResponse: ProductResponseDTO = {
+            id: product.id,
+            store_id: product.store_id,
+            category_name: category_name,
+            name: product.name,
+            description: product.description,
+            price: product.price,
+            stock: product.stock,
+            medias: product.medias
+        }
+
+        products.push(productResponse);
+    })
+
+    return res.json(products);
+}
+
+export function getProductByStore(req: Request<any, any, any>, res: any) {
+    const store_id = req.params.id;
+    const storeOpt = usersStorage.get(store_id)
+
+    if ("None" in storeOpt) {
+        return res.status(400).json("Store does not exist");
+    }
+
+    let products: ProductResponseDTO[] = [];
+
+    productStorage.values().forEach((product: Product) => {
+        if (product.store_id === store_id) {
+            const category_name = getCategoryName(product.category_id);
+
+            const productResponse: ProductResponseDTO = {
+                id: product.id,
+                store_id: product.store_id,
+                category_name: category_name,
+                name: product.name,
+                description: product.description,
+                price: product.price,
+                stock: product.stock,
+                medias: product.medias
+            }
+
+            products.push(productResponse);
+        }
+    })
+
+    return res.json(products);
+}
+
+export function getProductById(req: Request<any, any, any>, res: any) {
+    const product_id = req.params.id
+
+    const productOpt = productStorage.get(product_id)
+
+    if ("None" in productOpt) {
+        return res.status(400).json("Product does not exist");
+    }
+
+    const category_name = getCategoryName(productOpt.Some.category_id);
+
+    const response: ProductResponseDTO = {
+        id: productOpt.Some.id,
+        store_id: productOpt.Some.store_id,
+        category_name: category_name,
+        name: productOpt.Some.name,
+        description: productOpt.Some.description,
+        price: productOpt.Some.price,
+        stock: productOpt.Some.stock,
+        medias: productOpt.Some.medias
+    }
+
+    return res.json(response);
+}
+
+export function getProductByName(req: Request<any, any, any>, res: any) {
+    const name = req.query.name ? req.query.name : "asd";
+
+    let products: ProductResponseDTO[] = [];
+
+    for (const product of productStorage.values()) {
+
+        if (product.name.toLowerCase().includes((name as string).toLowerCase())) {
+            const category_name = getCategoryName(product.category_id);
+
+            const productResponse: ProductResponseDTO = {
+                id: product.id,
+                store_id: product.store_id,
+                category_name: category_name,
+                name: product.name,
+                description: product.description,
+                price: product.price,
+                stock: product.stock,
+                medias: product.medias
+            }
+
+            products.push(productResponse);
+        }
+
+
+    }
+
+    return res.json(products);
 }

@@ -9,7 +9,7 @@ import { authenticateToken } from './service/user_token.service';
 import { createCategory, seedCategory } from './service/category.service';
 import Category from './model/category';
 import { createMedia } from './service/media.service';
-import { createProduct, removeProduct, updateProduct } from './service/product.service';
+import { createProduct, getAllProduct, getProductById, getProductByName, getProductByStore, removeProduct, updateProduct } from './service/product.service';
 import { checkIsStore, checkLoggedIn } from './routes/middleware';
 import { createStore } from './service/store.service';
 
@@ -50,7 +50,7 @@ export default Server(() => {
         res.json(categoryStorage.values());
     });
 
-    app.post("/category", checkLoggedIn, checkIsStore, (req, res) => {
+    app.post("/category", checkLoggedIn, checkIsStore, (req: Request<any, any, any>, res) => {
         createCategory(req, res);
     });
 
@@ -63,21 +63,40 @@ export default Server(() => {
 
     // product
 
-    app.get("/product", (_, res) => {
-        res.json(productStorage.values());
+    app.get("/product", (req, res) => {
+        const name = req.query.name;
+        if (name) {
+            getProductByName(req, res);
+            return;
+        }
+
+        getAllProduct(req, res);
     })
 
-    app.delete("/product/:id", checkLoggedIn, checkIsStore, (req, res) => {
+    app.delete("/product/:id", checkLoggedIn, checkIsStore, (req: Request<any, any, any>, res) => {
         removeProduct(req, res);
     })
 
-    app.put("/product/:id", checkLoggedIn, checkIsStore, (req, res) => {
+    app.put("/product/:id", checkLoggedIn, checkIsStore, (req: Request<any, any, any>, res) => {
         updateProduct(req, res);
     })
 
-    app.post("/product", checkLoggedIn, checkIsStore, (req, res) => {
+    app.post("/product", checkLoggedIn, checkIsStore, (req: Request<any, any, any>, res) => {
         createProduct(req, res);
     })
+
+    app.get("/user/:id/product", (req: Request<any, any, any>, res) => {
+        getProductByStore(req, res);
+    })
+
+    app.get("/product/:id", (req: Request<any, any, any>, res) => {
+        getProductById(req, res);
+    })
+
+    app.get("/product/:name", (req: Request<any, any, any>, res) => {
+        getProductByName(req, res);
+    })
+
 
 
 

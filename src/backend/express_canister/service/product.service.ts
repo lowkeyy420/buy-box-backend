@@ -70,3 +70,23 @@ export function removeProduct(req: Request<any, any, any>, res: any) {
     productStorage.remove(product_id);
     return res.json(product);
 }
+
+export function updateProduct(req: Request<any, any, any>, res: any) {
+    const store_id = (req as any).user.id;
+    const product_id = req.params.id;
+
+    const productOpt = productStorage.get(product_id);
+
+    if ("None" in productOpt) {
+        return res.status(400).json("Product does not exist");
+    }
+
+    if (store_id !== productOpt.Some.store_id) {
+        return res.status(400).json("Unauthorized");
+    }
+
+    const newProduct: Product = req.body;
+
+    productStorage.insert(product_id, newProduct);
+    return res.json(newProduct);
+}

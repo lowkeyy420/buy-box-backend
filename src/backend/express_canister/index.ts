@@ -9,7 +9,7 @@ import { authenticateToken } from './service/user_token.service';
 import { createCategory, seedCategory } from './service/category.service';
 import Category from './model/category';
 import { createMedia } from './service/media.service';
-import { createProduct, removeProduct } from './service/product.service';
+import { createProduct, removeProduct, updateProduct } from './service/product.service';
 import { checkIsStore, checkLoggedIn } from './routes/middleware';
 import { createStore } from './service/store.service';
 
@@ -71,6 +71,9 @@ export default Server(() => {
         removeProduct(req, res);
     })
 
+    app.put("/product/:id", checkLoggedIn, checkIsStore, (req, res) => {
+        updateProduct(req, res);
+    })
 
     app.post("/product", checkLoggedIn, checkIsStore, (req, res) => {
         createProduct(req, res);

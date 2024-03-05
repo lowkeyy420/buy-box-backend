@@ -1,3 +1,4 @@
+import { Request } from "express";
 import { categoryStorage, mediaStorage, productStorage } from "../db/data";
 import ProductRequestDTO from "../dto/request/product.create.dto";
 import Media from "../model/media";
@@ -5,7 +6,7 @@ import Product from "../model/product";
 import generateId from "../utils/util";
 import { createMedia } from "./media.service";
 
-export function createProduct(req: any, res: any) {
+export function createProduct(req: Request<any, any, any>, res: any) {
 
     const store_id = (req as any).user.id;
     const payload: ProductRequestDTO = req.body;
@@ -48,5 +49,24 @@ export function createProduct(req: any, res: any) {
     };
 
     productStorage.insert(product.id, product);
+    return res.json(product);
+}
+
+export function removeProduct(req: Request<any, any, any>, res: any) {
+    const store_id = (req as any).user.id;
+    const product_id = req.params.id;
+
+    const productOpt = productStorage.get(product_id);
+    if ("None" in productOpt) {
+        return res.status(400).json("No such product");
+    }
+
+    const product: Product = productOpt.Some;
+
+    if (store_id !== product.store_id) {
+        return res.status(400).json("Unauthorized");
+    }
+
+    productStorage.remove(product_id);
     return res.json(product);
 }

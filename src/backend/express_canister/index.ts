@@ -1,7 +1,7 @@
 import { Server } from 'azle';
 import express, { Request } from 'express';
 import cors from 'cors';
-import { categoryStorage, mediaStorage, productStorage, tokenStorage, usersStorage } from './db/data';
+import { cartStorage, categoryStorage, productStorage, tokenStorage, usersStorage } from './db/data';
 import UserCreateRequestDTO from './dto/request/user.create.dto';
 import UserLoginRequestDTO from './dto/request/user.login.dto';
 import { createUser, loginUser } from './service/user.service';
@@ -10,6 +10,7 @@ import { createCategory, seedCategory } from './service/category.service';
 import { createProduct, getAllProduct, getProductById, getProductByName, getProductByStore, removeProduct, updateProduct } from './service/product.service';
 import { checkIsStore, checkLoggedIn } from './routes/middleware';
 import { createStore } from './service/store.service';
+import { addCart, getCart } from './service/cart.service';
 
 
 export default Server(() => {
@@ -52,11 +53,6 @@ export default Server(() => {
         createCategory(req, res);
     });
 
-    // media
-
-    app.get("/media", (_, res) => {
-        res.json(mediaStorage.values());
-    })
 
 
     // product
@@ -95,7 +91,17 @@ export default Server(() => {
         getProductByName(req, res);
     })
 
+    app.get("/cart", checkLoggedIn, (req: Request<any, any, any>, res) => {
+        getCart(req, res);
+    })
 
+    app.get("/cart/all", checkLoggedIn, (req: Request<any, any, any>, res) => {
+        res.json(cartStorage.values());
+    })
+
+    app.post("/cart", checkLoggedIn, (req: Request<any, any, any>, res) => {
+        addCart(req, res);
+    })
 
 
     // testing purpose

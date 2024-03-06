@@ -1,7 +1,6 @@
 import { Request } from "express";
-import { categoryStorage, mediaStorage, productStorage, usersStorage } from "../db/data";
+import { categoryStorage, productStorage, usersStorage } from "../db/data";
 import ProductRequestDTO from "../dto/request/product.create.dto";
-import Media from "../model/media";
 import Product from "../model/product";
 import generateId from "../utils/util";
 import { getCategoryName } from "./category.service";

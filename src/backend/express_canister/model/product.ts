@@ -1,5 +1,3 @@
-import Media from "./media";
-
 class Product {
     id: string;
     store_id: string;

@@ -1,5 +1,3 @@
-import Media from "../../model/media";
-
 
 class ProductResponseDTO {
     id: string;

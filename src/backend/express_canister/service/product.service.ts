@@ -4,7 +4,6 @@ import ProductRequestDTO from "../dto/request/product.create.dto";
 import Media from "../model/media";
 import Product from "../model/product";
 import generateId from "../utils/util";
-import { createMedia } from "./media.service";
 import { getCategoryName } from "./category.service";
 import ProductResponseDTO from "../dto/response/product.dto";
 
@@ -12,6 +11,8 @@ export function createProduct(req: Request<any, any, any>, res: any) {
 
     const store_id = (req as any).user.id;
     const payload: ProductRequestDTO = req.body;
+
+
 
     let id = "";
 
@@ -28,17 +29,6 @@ export function createProduct(req: Request<any, any, any>, res: any) {
         }
     }
 
-    let medias: Media[] = []
-
-    payload.media_urls.forEach((media_url: string) => {
-        const media = createMedia(id, media_url)
-        if (media) {
-            medias.push(media);
-        }
-    })
-
-
-
     const product: Product = {
         id: id,
         store_id: store_id,
@@ -47,7 +37,7 @@ export function createProduct(req: Request<any, any, any>, res: any) {
         description: payload.description,
         price: payload.price,
         stock: payload.stock,
-        medias: medias
+        image_url: payload.image_url
     };
 
     productStorage.insert(product.id, product);
@@ -60,7 +50,7 @@ export function createProduct(req: Request<any, any, any>, res: any) {
         description: product.description,
         price: product.price,
         stock: product.stock,
-        medias: product.medias
+        image_url: product.image_url
     }
 
     return res.json(response);
@@ -118,7 +108,7 @@ export function getAllProduct(req: Request<any, any, any>, res: any) {
             description: product.description,
             price: product.price,
             stock: product.stock,
-            medias: product.medias
+            image_url: product.image_url
         }
 
         products.push(productResponse);
@@ -149,7 +139,7 @@ export function getProductByStore(req: Request<any, any, any>, res: any) {
                 description: product.description,
                 price: product.price,
                 stock: product.stock,
-                medias: product.medias
+                image_url: product.image_url
             }
 
             products.push(productResponse);
@@ -178,14 +168,14 @@ export function getProductById(req: Request<any, any, any>, res: any) {
         description: productOpt.Some.description,
         price: productOpt.Some.price,
         stock: productOpt.Some.stock,
-        medias: productOpt.Some.medias
+        image_url: productOpt.Some.image_url
     }
 
     return res.json(response);
 }
 
 export function getProductByName(req: Request<any, any, any>, res: any) {
-    const name = req.query.name ? req.query.name : "asd";
+    const name = req.query.name ? req.query.name : "";
 
     let products: ProductResponseDTO[] = [];
 
@@ -202,7 +192,7 @@ export function getProductByName(req: Request<any, any, any>, res: any) {
                 description: product.description,
                 price: product.price,
                 stock: product.stock,
-                medias: product.medias
+                image_url: product.image_url
             }
 
             products.push(productResponse);

@@ -7,8 +7,6 @@ import UserLoginRequestDTO from './dto/request/user.login.dto';
 import { createUser, loginUser } from './service/user.service';
 import { authenticateToken } from './service/user_token.service';
 import { createCategory, seedCategory } from './service/category.service';
-import Category from './model/category';
-import { createMedia } from './service/media.service';
 import { createProduct, getAllProduct, getProductById, getProductByName, getProductByStore, removeProduct, updateProduct } from './service/product.service';
 import { checkIsStore, checkLoggedIn } from './routes/middleware';
 import { createStore } from './service/store.service';

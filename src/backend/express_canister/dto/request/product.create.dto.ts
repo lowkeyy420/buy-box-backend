@@ -1,28 +1,25 @@
 
 class ProductRequestDTO {
-    store_id: string;
     category_id: string;
     name: string;
     description: string;
     price: number;
     stock: number;
-    media_urls: string[];
+    image_url: string[];
 
     constructor(
-        store_id: string,
         category_id: string,
         name: string,
         description: string,
         price: number,
         stock: number,
-        media_urls: string[]) {
-        this.store_id = store_id;
+        image_url: string[]) {
         this.category_id = category_id;
         this.name = name;
         this.description = description;
         this.price = price;
         this.stock = stock;
-        this.media_urls = media_urls;
+        this.image_url = image_url;
     }
 
 };

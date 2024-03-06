@@ -9,7 +9,7 @@ class ProductResponseDTO {
     description: string;
     price: number;
     stock: number;
-    medias: Media[];
+    image_url: string[];
 
     constructor(id: string,
         store_id: string,
@@ -18,7 +18,7 @@ class ProductResponseDTO {
         description: string,
         price: number,
         stock: number,
-        medias: Media[]) {
+        image_url: string[]) {
         this.id = id;
         this.store_id = store_id;
         this.category_name = category_name;
@@ -26,7 +26,7 @@ class ProductResponseDTO {
         this.description = description;
         this.price = price;
         this.stock = stock;
-        this.medias = medias;
+        this.image_url = image_url;
     }
 
 };

@@ -8,7 +8,7 @@ class Product {
     description: string;
     price: number;
     stock: number;
-    medias: Media[];
+    image_url: string[];
 
     constructor(id: string,
         store_id: string,
@@ -17,7 +17,7 @@ class Product {
         description: string,
         price: number,
         stock: number,
-        medias: Media[]) {
+        image_url: string[]) {
         this.id = id;
         this.store_id = store_id;
         this.category_id = category_id;
@@ -25,7 +25,7 @@ class Product {
         this.description = description;
         this.price = price;
         this.stock = stock;
-        this.medias = medias;
+        this.image_url = image_url;
     }
 
 };

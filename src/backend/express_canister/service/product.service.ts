@@ -13,6 +13,12 @@ export function createProduct(req: Request<any, any, any>, res: any) {
     const payload: ProductRequestDTO = req.body;
 
 
+    const requiredFields = ['category_id', 'name', 'description', 'price', 'stock', 'image_url'];
+    const missingFields = requiredFields.filter(field => !payload.hasOwnProperty(field));
+
+    if (missingFields.length > 0) {
+        return res.status(400).json({ error: `Missing required fields: ${missingFields.join(', ')}` });
+    }
 
     let id = "";
 
@@ -90,6 +96,24 @@ export function updateProduct(req: Request<any, any, any>, res: any) {
     }
 
     const newProduct: Product = req.body;
+
+    const requiredFields = [
+        'id',
+        'store_id',
+        'category_id',
+        'name',
+        'description',
+        'price',
+        'stock',
+        'image_url'
+    ];
+
+    const missingFields = requiredFields.filter(field => !newProduct.hasOwnProperty(field));
+
+    if (missingFields.length > 0) {
+        return res.status(400).json({ error: `Missing required fields: ${missingFields.join(', ')}` });
+    }
+
 
     productStorage.insert(product_id, newProduct);
     return res.json(newProduct);

@@ -4,6 +4,7 @@ import UserToken from "../model/user_token";
 import Product from "../model/product";
 import Category from "../model/category";
 import Cart from "../model/cart";
+import { Order } from "../model/order";
 
 const STORAGE_MEMORY_ID = {
     "USER": 1,
@@ -22,6 +23,8 @@ export const categoryStorage = StableBTreeMap<string, Category>(STORAGE_MEMORY_I
 export const productStorage = StableBTreeMap<string, Product>(STORAGE_MEMORY_ID["PRODUCT"]);
 
 export const cartStorage = StableBTreeMap<string, Cart[]>(STORAGE_MEMORY_ID["CART"]);
+
+export const orderStorage = StableBTreeMap<string, Order>(STORAGE_MEMORY_ID["ORDER"]);
 
 
 

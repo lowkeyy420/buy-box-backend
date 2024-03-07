@@ -31,7 +31,8 @@ export function createUser(req: Request<UserCreateRequestDTO, any, any>, res: an
       id: userID,
       ...payload,
       password: password,
-      is_store: false
+      is_store: false,
+      balance: 0
     };
 
     usersStorage.insert(user.id, user);

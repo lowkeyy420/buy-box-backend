@@ -12,6 +12,8 @@ import { checkIsStore, checkLoggedIn } from './routes/middleware';
 import { createStore } from './service/store.service';
 import { addCart, deleteCart, getCart } from './service/cart.service';
 import { seedCategory, seedProduct, seedStore } from './utils/seeder';
+import { createOrder, getOrderByBuyerID, getOrderByStoreID, getUserOrder } from './service/order.service';
+import { get } from 'http';
 
 
 export default Server(() => {
@@ -108,6 +110,28 @@ export default Server(() => {
 
     app.delete("/cart", checkLoggedIn, (req: Request<any, any, any>, res) => {
         deleteCart(req, res);
+    })
+
+    // order
+    app.post("/order", checkLoggedIn, (req: Request<any, any, any>, res) => {
+        createOrder(req, res);
+    })
+
+    app.get("/user/:id/order", checkLoggedIn, (req: Request<any, any, any>, res) => {
+        getOrderByStoreID(req, res);
+    })
+
+    app.get("/order", checkLoggedIn, (req: Request<any, any, any>, res) => {
+        const buyer_id = req.query.buyer_id;
+        if (buyer_id) {
+            getOrderByBuyerID(req, res);
+            return;
+        }
+        getUserOrder(req, res);
+    })
+
+    app.put("/order", checkLoggedIn, (req: Request<any, any, any>, res) => {
+        updateProduct(req, res);
     })
 
 

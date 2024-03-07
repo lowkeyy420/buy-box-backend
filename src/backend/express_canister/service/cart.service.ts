@@ -99,3 +99,27 @@ function buildCartResponseDTO(item: Cart): CartResponseDTO {
 
     return { product_id: item.product_id, quantity: item.quantity, product: productResponse };
 }
+
+export function deleteCart(req: Request<any, any, any>, res: any) {
+    const user_id = (req as any).user.id;
+    const payload: Cart = req.body;
+
+    const cartOpt = cartStorage.get(user_id);
+
+    if ("None" in cartOpt) {
+        return res.json([]);
+    }
+
+    const cart: Cart[] = cartOpt.Some;
+
+    let response: CartResponseDTO
+
+    for (const item of cart) {
+        if (item.product_id === payload.product_id) {
+            cart.splice(cart.indexOf(item), 1);
+        }
+    }
+
+    cartStorage.insert(user_id, cart);
+    return res.status(204).json();
+}

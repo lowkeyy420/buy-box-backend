@@ -10,7 +10,7 @@ import { createCategory } from './service/category.service';
 import { createProduct, getAllProduct, getProductById, getProductByName, getProductByStore, removeProduct, updateProduct } from './service/product.service';
 import { checkIsStore, checkLoggedIn } from './routes/middleware';
 import { createStore } from './service/store.service';
-import { addCart, getCart } from './service/cart.service';
+import { addCart, deleteCart, getCart } from './service/cart.service';
 import { seedCategory, seedProduct, seedStore } from './utils/seeder';
 
 
@@ -104,6 +104,10 @@ export default Server(() => {
 
     app.post("/cart", checkLoggedIn, (req: Request<any, any, any>, res) => {
         addCart(req, res);
+    })
+
+    app.delete("/cart", checkLoggedIn, (req: Request<any, any, any>, res) => {
+        deleteCart(req, res);
     })
 
 

@@ -6,11 +6,12 @@ import UserCreateRequestDTO from './dto/request/user.create.dto';
 import UserLoginRequestDTO from './dto/request/user.login.dto';
 import { createUser, loginUser } from './service/user.service';
 import { authenticateToken } from './service/user_token.service';
-import { createCategory, seedCategory } from './service/category.service';
+import { createCategory } from './service/category.service';
 import { createProduct, getAllProduct, getProductById, getProductByName, getProductByStore, removeProduct, updateProduct } from './service/product.service';
 import { checkIsStore, checkLoggedIn } from './routes/middleware';
 import { createStore } from './service/store.service';
 import { addCart, getCart } from './service/cart.service';
+import { seedCategory, seedProduct, seedStore } from './utils/seeder';
 
 
 export default Server(() => {
@@ -20,6 +21,8 @@ export default Server(() => {
     app.use(express.json());
 
     seedCategory();
+    seedStore();
+    seedProduct();
 
 
 

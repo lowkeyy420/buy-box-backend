@@ -109,7 +109,7 @@ function buildCartResponseDTO(item: Cart): CartResponseDTO {
 
 export function deleteCart(req: Request<any, any, any>, res: any) {
     const user_id = (req as any).user.id;
-    const payload: Cart = req.body;
+    const payload = req.params.id;
 
     const cartOpt = cartStorage.get(user_id);
 
@@ -122,7 +122,7 @@ export function deleteCart(req: Request<any, any, any>, res: any) {
     let response: CartResponseDTO
 
     for (const item of cart) {
-        if (item.product_id === payload.product_id) {
+        if (item.product_id === payload) {
             cart.splice(cart.indexOf(item), 1);
         }
     }

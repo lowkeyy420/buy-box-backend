@@ -113,7 +113,7 @@ export default Server(() => {
     })
 
     // order
-    app.post("/order", checkLoggedIn, (req: Request<any, any, any>, res) => {
+    app.post("/order/:id", checkLoggedIn, (req: Request<any, any, any>, res) => {
         createOrder(req, res);
     })
 

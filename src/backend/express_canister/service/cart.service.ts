@@ -5,9 +5,10 @@ import CartResponseDTO from '../dto/response/cart.dto';
 import Product from '../model/product';
 import { getCategoryName } from './category.service';
 import ProductResponseDTO from '../dto/response/product.dto';
+import CartCreateRequestDTO from '../dto/request/cart.create.dto';
 
 export function addCart(req: Request<any, any, any>, res: Response) {
-    const request: Cart = req.body;
+    const request: CartCreateRequestDTO = req.body;
     const requiredFields = ["product_id", "quantity"];
     const missingFields = requiredFields.filter(field => !request.hasOwnProperty(field));
 
@@ -27,8 +28,14 @@ export function addCart(req: Request<any, any, any>, res: Response) {
     const userId = (req as any).user.id;
     const cartOpt = cartStorage.get(userId);
 
+    const cartToAdd: Cart = {
+        product_id: request.product_id,
+        store_id: productRequestOpt.Some.store_id,
+        quantity: request.quantity
+    }
+
     if ("None" in cartOpt) {
-        cartStorage.insert(userId, [request]);
+        cartStorage.insert(userId, [cartToAdd]);
         return sendProductResponse(res, productRequestOpt.Some, request.quantity);
     }
 
@@ -44,7 +51,7 @@ export function addCart(req: Request<any, any, any>, res: Response) {
         }
     }
 
-    newCart.push(request);
+    newCart.push(cartToAdd);
     cartStorage.insert(userId, newCart);
     return sendProductResponse(res, productRequestOpt.Some, request.quantity);
 }

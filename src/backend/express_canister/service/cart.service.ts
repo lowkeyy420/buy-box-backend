@@ -119,8 +119,6 @@ export function deleteCart(req: Request<any, any, any>, res: any) {
 
     const cart: Cart[] = cartOpt.Some;
 
-    let response: CartResponseDTO
-
     for (const item of cart) {
         if (item.product_id === payload) {
             cart.splice(cart.indexOf(item), 1);

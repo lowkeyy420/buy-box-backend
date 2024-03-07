@@ -1,9 +1,10 @@
 import { Request } from "express";
-import { cartStorage, orderStorage, productStorage } from "../db/data";
+import { cartStorage, orderStorage, productStorage, usersStorage } from "../db/data";
 import Cart from "../model/cart";
 import generateId from "../utils/util";
 import { Order } from "../model/order";
 import User from "../model/user";
+import { OrderResponseDTO } from "../dto/response/order.dto";
 
 export function createOrder(req: Request<any, any, any>, res: any) {
     const user_id = (req as any).user.id;
@@ -39,18 +40,73 @@ export function createOrder(req: Request<any, any, any>, res: any) {
 }
 
 export function getOrderByStoreID(req: Request<any, any, any>, res: any) {
-    const user_id = (req as any).user.id;
+    const user = (req as any).user;
 
     const store_id = req.params.id;
 
-    const orders: Order[] = orderStorage.values().filter((order) => order.store_id === store_id && order.buyer_id === user_id);
-    return res.json(orders);
+    const allOrders = orderStorage.values();
+
+    let response: OrderResponseDTO[] = [];
+    for (const order of allOrders) {
+        if (order.store_id === store_id && order.buyer_id === store_id) {
+            const productOpt = productStorage.get(order.product_id);
+            if ("None" in productOpt) {
+                continue;
+            }
+
+            const storeOpt = usersStorage.get(order.store_id);
+            if ("None" in storeOpt) {
+                continue;
+            }
+
+            const orderDTO: OrderResponseDTO = {
+                id: order.id,
+                store_name: storeOpt.Some.username,
+                buyer_name: user.full_name,
+                buyer_id: order.buyer_id,
+                product: productOpt.Some,
+                order_date: order.order_date,
+                quantity: order.quantity,
+                status: order.status
+            }
+            response.push(orderDTO);
+        }
+    }
+
+    return res.json(response);
 }
 
 export function getUserOrder(req: Request<any, any, any>, res: any) {
     const user: User = (req as any).user;
-    const orders: Order[] = orderStorage.values().filter((order) => order.buyer_id === user.id);
-    return res.json(orders);
+
+    const allOrders = orderStorage.values();
+
+    let response: OrderResponseDTO[] = [];
+    for (const order of allOrders) {
+        if (order.buyer_id === user.id) {
+            const productOpt = productStorage.get(order.product_id);
+            if ("None" in productOpt) {
+                continue;
+            }
+
+            const storeOpt = usersStorage.get(order.store_id);
+            if ("None" in storeOpt) {
+                continue;
+            }
+            const orderDTO: OrderResponseDTO = {
+                id: order.id,
+                store_name: storeOpt.Some.username,
+                buyer_name: user.full_name,
+                buyer_id: order.buyer_id,
+                product: productOpt.Some,
+                order_date: order.order_date,
+                quantity: order.quantity,
+                status: order.status
+            }
+            response.push(orderDTO);
+        }
+    }
+    return res.json(response);
 }
 
 // Seller Only
@@ -64,8 +120,35 @@ export function getOrderByBuyerID(req: Request<any, any, any>, res: any) {
         return;
     }
 
-    const orders: Order[] = orderStorage.values().filter((order) => order.store_id === user.id && order.buyer_id === buyer_id);
-    return res.json(orders);
+    const allOrders = orderStorage.values();
+
+    let response: OrderResponseDTO[] = [];
+    for (const order of allOrders) {
+        if (order.buyer_id === buyer_id && order.store_id === user.id) {
+            const productOpt = productStorage.get(order.product_id);
+            if ("None" in productOpt) {
+                continue;
+            }
+
+            const buyerOpt = usersStorage.get(order.buyer_id);
+            if ("None" in buyerOpt) {
+                continue;
+            }
+
+            const orderDTO: OrderResponseDTO = {
+                id: order.id,
+                store_name: user.username,
+                buyer_name: buyerOpt.Some.full_name,
+                buyer_id: order.buyer_id,
+                product: productOpt.Some,
+                order_date: order.order_date,
+                quantity: order.quantity,
+                status: order.status
+            }
+            response.push(orderDTO);
+        }
+    }
+    return res.json(response);
 }
 
 export function updateOrderStatus(req: Request<any, any, any>, res: any) {

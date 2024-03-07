@@ -108,12 +108,12 @@ export default Server(() => {
         addCart(req, res);
     })
 
-    app.delete("/cart", checkLoggedIn, (req: Request<any, any, any>, res) => {
+    app.delete("/cart/:id", checkLoggedIn, (req: Request<any, any, any>, res) => {
         deleteCart(req, res);
     })
 
     // order
-    app.post("/order/:id", checkLoggedIn, (req: Request<any, any, any>, res) => {
+    app.post("/order", checkLoggedIn, (req: Request<any, any, any>, res) => {
         createOrder(req, res);
     })
 

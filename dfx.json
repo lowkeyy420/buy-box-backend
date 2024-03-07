@@ -14,15 +14,6 @@
                 ]
             ],
             "build_assets": "npm run build"
-        },
-        "transaction": {
-            "type": "custom",
-            "main": "src/backend/transaction_canister/index.ts",
-            "candid": "src/backend/transaction_canister/index.did",
-            "build": "npx azle transaction",
-            "wasm": ".azle/transaction/transaction.wasm",
-            "gzip": true,
-            "build_assets": "npm run build"
         }
     }
 }

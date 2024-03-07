@@ -12,7 +12,7 @@ import { checkIsStore, checkLoggedIn } from './routes/middleware';
 import { createStore } from './service/store.service';
 import { addCart, deleteCart, getCart } from './service/cart.service';
 import { seedCategory, seedProduct, seedStore } from './utils/seeder';
-import { createOrder, getOrderByBuyerID, getOrderByStoreID, getUserOrder } from './service/order.service';
+import { createOrder, getOrderByBuyerID, getOrderByStoreID, getUserOrder, updateOrderStatus } from './service/order.service';
 import { get } from 'http';
 
 
@@ -131,7 +131,7 @@ export default Server(() => {
     })
 
     app.put("/order", checkLoggedIn, (req: Request<any, any, any>, res) => {
-        updateProduct(req, res);
+        updateOrderStatus(req, res);
     })
 
 

@@ -48,7 +48,7 @@ export function getOrderByStoreID(req: Request<any, any, any>, res: any) {
 
     let response: OrderResponseDTO[] = [];
     for (const order of allOrders) {
-        if (order.store_id === store_id && order.buyer_id === store_id) {
+        if (order.store_id === store_id) {
             const productOpt = productStorage.get(order.product_id);
             if ("None" in productOpt) {
                 continue;
@@ -157,20 +157,31 @@ export function updateOrderStatus(req: Request<any, any, any>, res: any) {
     const order_id = req.body.order_id;
     const status = req.body.status;
 
-    const order = orderStorage.get(order_id);
+    const orderOpt = orderStorage.get(order_id);
 
-    if ("None" in order) {
+    if ("None" in orderOpt) {
         res.status(404).send("Order not found");
         return;
     }
 
-    if (order.Some.store_id !== user_id) {
+    if (orderOpt.Some.store_id !== user_id) {
         res.status(401).send("Unauthorized");
         return;
     }
 
-    order.Some.status = status;
-    orderStorage.insert(order_id, order.Some);
+    const order = orderOpt.Some;
+
+    const newOrder: Order = {
+        id: order_id,
+        store_id: order.store_id,
+        buyer_id: order.buyer_id,
+        product_id: order.product_id,
+        order_date: order.order_date,
+        quantity: order.quantity,
+        status: status
+    };
+
+    orderStorage.insert(order_id, newOrder);
 
     res.status(200).send("Order updated");
 }
